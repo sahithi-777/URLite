@@ -12,12 +12,12 @@ const RedirectLink = () => {
   const {loading, data, fn, error} = useFetch(getLongUrl, id);
   const {loading: loadingStats, fn: fnStats} = useFetch(storeClicks);
 
-  useEffect(() => {
-    console.log("RedirectLink mounted with id:", id);
-    fn();
-  }, []);
-
-
+useEffect(() => {
+  if (id) {
+    fn(); // Only fetch when the ID is actually present
+  }
+}, [id]);// Add 'id' as a dependency
+// redirect-link.jsx
 useEffect(() => {
   if (!loading && data && data.original_url) {
     // Start tracking and redirecting
@@ -27,6 +27,16 @@ useEffect(() => {
     });
   }
 }, [loading, data]); // Simplified dependencies
+
+// useEffect(() => {
+//   if (!loading && data && data.original_url) {
+//     // Start tracking and redirecting
+//     fnStats({
+//       id: data.id,
+//       originalUrl: data.original_url,
+//     });
+//   }
+// }, [loading, data]); // Simplified dependencies
 
 
   if (loading || loadingStats) {

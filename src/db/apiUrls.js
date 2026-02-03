@@ -30,19 +30,30 @@ export async function getUrl({id, user_id}) {
   return data;
 }
 
+// export async function getLongUrl(id) {
+//   let {data: shortLinkData, error: shortLinkError} = await supabase
+//     .from("urls")
+//     .select("id, original_url")
+//     .or(`short_url.eq.${id},custom_url.eq.${id}`)
+//     .single();
+
+//   if (shortLinkError && shortLinkError.code !== "PGRST116") {
+//     console.error("Error fetching short link:", shortLinkError);
+//     return;
+//   }
+
+//   return shortLinkData;
+// }
+// apiUrls.js
 export async function getLongUrl(id) {
-  let {data: shortLinkData, error: shortLinkError} = await supabase
+  const result = await supabase
     .from("urls")
     .select("id, original_url")
     .or(`short_url.eq.${id},custom_url.eq.${id}`)
     .single();
-
-  if (shortLinkError && shortLinkError.code !== "PGRST116") {
-    console.error("Error fetching short link:", shortLinkError);
-    return;
-  }
-
-  return shortLinkData;
+    
+  console.log("Supabase fetch for ID:", id, "Result:", result); // Add this line
+  return result.data;
 }
 
 // The function receives parameters correctly from the fixed useFetch hook
