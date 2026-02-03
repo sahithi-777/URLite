@@ -39,7 +39,7 @@ const LandingPage = () => {
         </Button>
       </form>
       <img
-        src="/banner.png" // replace with 2 in small screens
+        src="/banner.png" 
         className="w-full my-11 md:px-11"
       />
       <Accordion type="multiple" collapsible className="w-full md:px-11">
