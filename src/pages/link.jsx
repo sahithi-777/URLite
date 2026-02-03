@@ -9,18 +9,17 @@ import useFetch from "@/hooks/use-fetch";
 import {Copy, Download, LinkIcon, Trash} from "lucide-react";
 import {useEffect} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {BarLoader, BeatLoader} from "react-spinners";
+import {BeatLoader} from "react-spinners";
+import appBaseUrl from "@/lib/base-url";
 
 const LinkPage = () => {
   const downloadImage = () => {
     const imageUrl = url?.qr;
     const fileName = url?.title;
 
-
     const anchor = document.createElement("a");
     anchor.href = imageUrl;
     anchor.download = fileName;
-
 
     document.body.appendChild(anchor);
 
@@ -65,20 +64,17 @@ const LinkPage = () => {
 
   return (
     <>
-      {(loading || loadingStats) && (
-        <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />
-      )}
       <div className="flex flex-col gap-8 sm:flex-row justify-between">
         <div className="flex flex-col items-start gap-8 rounded-lg sm:w-2/5">
           <span className="text-6xl font-extrabold hover:underline cursor-pointer">
             {url?.title}
           </span>
           <a
-            href={`https://urlite.in/${link}`}
+            href={`${appBaseUrl}/${link}`}
             target="_blank"
             className="text-3xl sm:text-4xl text-blue-400 font-bold hover:underline cursor-pointer"
           >
-            https://urlite.in/{link}
+            {appBaseUrl}/{link}
           </a>
           <a
             href={url?.original_url}
@@ -95,7 +91,9 @@ const LinkPage = () => {
             <Button
               variant="ghost"
               onClick={() =>
-                navigator.clipboard.writeText(`https://urlite.in/${link}`)
+                navigator.clipboard.writeText(
+                  `${appBaseUrl}/${link}`
+                )
               }
             >
               <Copy />

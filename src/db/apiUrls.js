@@ -44,17 +44,25 @@ export async function getUrl({id, user_id}) {
 
 //   return shortLinkData;
 // }
-// apiUrls.js
+
 export async function getLongUrl(id) {
-  const result = await supabase
+  const normalized = id?.toLowerCase();
+
+  const { data, error } = await supabase
     .from("urls")
     .select("id, original_url")
-    .or(`short_url.eq.${id},custom_url.eq.${id}`)
-    .single();
-    
-  console.log("Supabase fetch for ID:", id, "Result:", result); // Add this line
-  return result.data;
+    .or(`short_url.ilike.${normalized},custom_url.ilike.${normalized}`)
+    .maybeSingle();
+
+  if (error) {
+    console.error("getLongUrl error:", error);
+    throw error;
+  }
+
+  return data;
 }
+
+
 
 // The function receives parameters correctly from the fixed useFetch hook
 export async function createUrl({title, longUrl, customUrl, user_id}, qrcode) {

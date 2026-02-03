@@ -5,24 +5,21 @@ import {Button} from "./ui/button";
 import useFetch from "@/hooks/use-fetch";
 import {deleteUrl} from "@/db/apiUrls";
 import {BeatLoader} from "react-spinners";
+import appBaseUrl from "@/lib/base-url";
 
 const LinkCard = ({url = [], fetchUrls}) => {
   const downloadImage = () => {
     const imageUrl = url?.qr;
-    const fileName = url?.title; // Desired file name for the downloaded image
+    const fileName = url?.title;
 
-    // Create an anchor element
     const anchor = document.createElement("a");
     anchor.href = imageUrl;
     anchor.download = fileName;
 
-    // Append the anchor to the body
     document.body.appendChild(anchor);
 
-    // Trigger the download by simulating a click event
     anchor.click();
 
-    // Remove the anchor from the document
     document.body.removeChild(anchor);
   };
 
@@ -40,7 +37,7 @@ const LinkCard = ({url = [], fetchUrls}) => {
           {url?.title}
         </span>
         <span className="text-2xl text-blue-400 font-bold hover:underline cursor-pointer">
-          https://urlite.in/{url?.custom_url ? url?.custom_url : url.short_url}
+          {appBaseUrl}/{url?.custom_url ? url?.custom_url : url.short_url}
         </span>
         <span className="flex items-center gap-1 hover:underline cursor-pointer">
           <LinkIcon className="p-1" />
@@ -54,7 +51,9 @@ const LinkCard = ({url = [], fetchUrls}) => {
         <Button
           variant="ghost"
           onClick={() =>
-            navigator.clipboard.writeText(`https://urlite.in/${url?.short_url}`)
+            navigator.clipboard.writeText(
+              `${appBaseUrl}/${url?.short_url}`
+            )
           }
         >
           <Copy />

@@ -18,6 +18,7 @@ import { createUrl } from "@/db/apiUrls";
 import { BeatLoader } from "react-spinners";
 import { UrlState } from "@/context";
 import { QRCode } from "react-qrcode-logo";
+import appBaseUrl from "@/lib/base-url";
 
 export function CreateLink() {
   const { user } = UrlState();
@@ -68,7 +69,6 @@ export function CreateLink() {
     try {
       await schema.validate(formValues, { abortEarly: false });
 
-      // Convert QR canvas to Blob
       let qrBlob = null;
       if (qrRef.current?.canvasRef?.current) {
         const canvas = qrRef.current.canvasRef.current;
@@ -77,8 +77,6 @@ export function CreateLink() {
         );
       }
 
-      // FIXED: Pass the data as an object (first param) and qrBlob (second param)
-      // This matches the function signature: createUrl({title, longUrl, customUrl, user_id}, qrcode)
       await fnCreateUrl(
         {
           title: formValues.title,
@@ -136,7 +134,10 @@ export function CreateLink() {
         {errors.longUrl && <Error message={errors.longUrl} />}
 
         <div className="flex items-center gap-2">
-          <Card className="p-2">urlite.in</Card> /
+          <Card className="p-2">
+            {appBaseUrl.replace(/^https?:\/\//, "")}
+          </Card>{" "}
+          /
           <Input
             id="customUrl"
             placeholder="Custom Link (optional)"

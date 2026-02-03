@@ -14,29 +14,23 @@ const RedirectLink = () => {
 
 useEffect(() => {
   if (id) {
-    fn(); // Only fetch when the ID is actually present
+    fn();
   }
-}, [id]);// Add 'id' as a dependency
-// redirect-link.jsx
+}, [id, fn]);
 useEffect(() => {
-  if (!loading && data && data.original_url) {
-    // Start tracking and redirecting
-    fnStats({
-      id: data.id,
-      originalUrl: data.original_url,
-    });
-  }
-}, [loading, data]); // Simplified dependencies
+  if (!loading && data?.original_url) {
+    const track = fnStats({id: data.id});
 
-// useEffect(() => {
-//   if (!loading && data && data.original_url) {
-//     // Start tracking and redirecting
-//     fnStats({
-//       id: data.id,
-//       originalUrl: data.original_url,
-//     });
-//   }
-// }, [loading, data]); // Simplified dependencies
+    const redirect = () => window.location.replace(data.original_url);
+
+    Promise.race([
+      track,
+      new Promise((resolve) => setTimeout(resolve, 800)),
+    ]).finally(redirect);
+  }
+}, [loading, data, fnStats]);
+
+
 
 
   if (loading || loadingStats) {
@@ -50,12 +44,22 @@ useEffect(() => {
   }
 
   if (error || !data || !data.original_url) {
+    const errorMessage =
+      error?.message ||
+      error?.details ||
+      error?.hint ||
+      "Unknown error";
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-4xl font-bold text-red-500 mb-4">404 - Link Not Found</h1>
         <p className="text-lg mb-4">
           This short link doesn&apos;t exist or has been deleted.
         </p>
+        {error && (
+          <p className="text-sm text-gray-400 mb-4">
+            Error: {errorMessage}
+          </p>
+        )}
         <button
           onClick={() => navigate("/")}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

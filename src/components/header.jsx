@@ -11,7 +11,6 @@ import useFetch from "@/hooks/use-fetch";
 import {Avatar, AvatarFallback, AvatarImage} from "@radix-ui/react-avatar";
 import {LinkIcon, LogOut} from "lucide-react";
 import {Link, useNavigate} from "react-router-dom";
-import {BarLoader} from "react-spinners";
 import {Button} from "./ui/button";
 import {UrlState} from "@/context";
 
@@ -66,7 +65,6 @@ const Header = () => {
           )}
         </div>
       </nav>
-      {loading && <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />}
     </>
   );
 };

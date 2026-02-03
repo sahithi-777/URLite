@@ -1,8 +1,6 @@
 import {UAParser} from "ua-parser-js";
 import supabase from "./supabase";
 
-
-
 export async function getClicksForUrls(urlIds) {
   const {data, error} = await supabase
     .from("clicks")
@@ -33,50 +31,37 @@ export async function getClicksForUrl(url_id) {
 
 const parser = new UAParser();
 
-// FIXED: Properly destructure parameters and ensure all fields are captured
-// apiClicks.js
-// export const storeClicks = async ({id, originalUrl}) => {
-//   try {
-//     const res = parser.getResult();
-//     const device = res.type || "desktop";
+const ipinfoToken = import.meta.env.VITE_IPINFO_TOKEN;
+const regionNames = new Intl.DisplayNames(["en"], {type: "region"});
 
-//     // Optional: Use a timeout for the IP fetch so it doesn't hang the redirect
-//     const response = await fetch("https://ipapi.co/json").catch(() => null);
-//     const locationData = response ? await response.json() : {};
+const getCountryName = (code) => {
+  if (!code) return "Unknown";
+  try {
+    return regionNames.of(code) || code;
+  } catch {
+    return code;
+  }
+};
 
-//     await supabase.from("clicks").insert({
-//       url_id: id,
-//       city: locationData.city || "Unknown",
-//       country: locationData.country_name || "Unknown",
-//       device: device,
-//     });
-//   } catch (error) {
-//     console.error("Error recording click:", error);
-//   } finally {
-//     // ALWAYS redirect, regardless of success or failure of the stats recording
-//     window.location.href = originalUrl;
-//   }
-// };
-// apiClicks.js
-export const storeClicks = async ({id, originalUrl}) => {
+export const storeClicks = async ({id}) => {
   try {
     const res = parser.getResult();
     const device = res.type || "desktop";
 
-    // Optional: Use a timeout for the IP fetch so it doesn't hang the redirect
-    const response = await fetch("https://ipapi.co/json").catch(() => null);
+    const response = ipinfoToken
+      ? await fetch(`https://ipinfo.io/json?token=${ipinfoToken}`).catch(
+          () => null
+        )
+      : null;
     const locationData = response ? await response.json() : {};
 
     await supabase.from("clicks").insert({
       url_id: id,
       city: locationData.city || "Unknown",
-      country: locationData.country_name || "Unknown",
+      country: getCountryName(locationData.country),
       device: device,
     });
   } catch (error) {
     console.error("Error recording click:", error);
-  } finally {
-    // ALWAYS redirect, regardless of success or failure of the stats recording
-    window.location.href = originalUrl;
   }
 };
